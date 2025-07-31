@@ -3,11 +3,22 @@ import { X, UploadCloud } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
+// FIX: These interfaces now match the comprehensive definitions in PostCard.tsx
 interface PostAuthor {
   _id: string;
   fullName: string;
+  username: string;
+  email: string;
   role: string;
   avatar?: string;
+  bio?: string;
+  skills?: string[];
+  followers: string[];
+  following: string[];
+  resumeUrl?: string;
+  profilePictureUrl?: string;
+  location?: string;
+  coverPhotoUrl?: string;
 }
 
 interface Post {
@@ -18,10 +29,11 @@ interface Post {
   mediaUrl?: string;
   mediaType?: 'Photo' | 'Video';
   likes: string[];
-  comments: any[];
-  group?: { _id: string; admin: string };
+  comments: { _id: string; user: PostAuthor; text: string; createdAt: string; }[];
+  group?: { _id: string; admin: string; };
   reactions: any[];
 }
+
 
 type EditPostModalProps = {
   isOpen: boolean;
@@ -81,7 +93,6 @@ const EditPostModal = ({ isOpen, onClose, onSuccess, post }: EditPostModalProps)
     const formData = new FormData();
     formData.append('file', newMediaFile);
     try {
-      // Assuming a dedicated upload endpoint for media files
       const response = await api.post('/api/posts/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
       });
@@ -140,7 +151,6 @@ const EditPostModal = ({ isOpen, onClose, onSuccess, post }: EditPostModalProps)
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
-        {/* Modal Header */}
         <div className="p-4 sm:p-6 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
           <h2 className="text-xl sm:text-2xl font-bold text-white">Edit Post</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white" aria-label="Close modal">
@@ -148,7 +158,6 @@ const EditPostModal = ({ isOpen, onClose, onSuccess, post }: EditPostModalProps)
           </button>
         </div>
 
-        {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
           {error && (
             <div className="p-3 text-sm text-red-200 bg-red-900/50 border border-red-500/50 rounded-md">{error}</div>
@@ -201,7 +210,6 @@ const EditPostModal = ({ isOpen, onClose, onSuccess, post }: EditPostModalProps)
           </div>
         </form>
 
-        {/* Modal Footer */}
         <div className="p-4 sm:p-6 border-t border-gray-700 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 flex-shrink-0">
           <button
             type="button"
