@@ -6,7 +6,7 @@ import api from '../services/api';
 import CommentSection from './CommentSection';
 import EditPostModal from './EditPostModal';
 
-// FIX: Expanded this interface to match the full UserProfile type from other components
+// FIX: Comprehensive interfaces to match data from all pages
 interface PostAuthor {
   _id: string;
   fullName: string;
@@ -49,7 +49,7 @@ const Toast = ({ message, onDone }: { message: string; onDone: () => void }) => 
   useEffect(() => {
     const timer = setTimeout(() => {
       onDone();
-    }, 3000); // Hide after 3 seconds
+    }, 3000);
     return () => clearTimeout(timer);
   }, [onDone]);
 
@@ -168,7 +168,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated, groupAdminId }: PostCard
     <>
       {toastMessage && <Toast message={toastMessage} onDone={() => setToastMessage(null)} />}
       <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700/50 overflow-hidden mb-6 transition-shadow hover:shadow-indigo-500/10">
-        {/* Card Header */}
         <div className="p-3 sm:p-4 flex items-center justify-between">
           <Link to={`/profile/${post.user._id}`} className="flex items-center space-x-3 group">
             <div className="relative">
@@ -210,7 +209,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated, groupAdminId }: PostCard
           )}
         </div>
 
-        {/* Media Container */}
         {post.mediaUrl && (
           <div className="bg-black">
             {post.mediaType === 'Photo' ? (
@@ -223,7 +221,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated, groupAdminId }: PostCard
           </div>
         )}
 
-        {/* Action Bar & Post Info */}
         <div className="p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -258,7 +255,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated, groupAdminId }: PostCard
           )}
         </div>
 
-        {/* Comment Section (collapsible) */}
         {showComments && (
           <CommentSection
             postId={post._id}
@@ -269,7 +265,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated, groupAdminId }: PostCard
           />
         )}
 
-        {/* Modals */}
         {showConfirmDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 animate-fade-in">
             <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-sm p-6 space-y-4 text-center animate-scale-in">
