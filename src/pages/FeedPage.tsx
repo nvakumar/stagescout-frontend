@@ -8,13 +8,23 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { XCircle, Menu, X, Home, Award, FileText } from 'lucide-react';
 
-// Define types for the data used in this component
+// --- TYPE DEFINITIONS (FIXED) ---
+// These now match the comprehensive definitions in PostCard.tsx to resolve the type error.
 interface PostAuthor {
   _id: string;
   fullName: string;
+  username: string;
+  email: string;
   role: string;
   avatar?: string;
+  bio?: string;
+  skills?: string[];
+  followers: string[];
+  following: string[];
+  resumeUrl?: string;
   profilePictureUrl?: string;
+  location?: string;
+  coverPhotoUrl?: string;
 }
 
 interface Post {
@@ -92,7 +102,7 @@ const FeedPage = () => {
                 ...post.user,
                 fullName: currentUser.fullName,
                 avatar: currentUser.profilePictureUrl || currentUser.avatar,
-              },
+              } as PostAuthor,
             }
           : post
       )
