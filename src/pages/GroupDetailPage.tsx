@@ -7,19 +7,37 @@ import LeftSidebar from '../components/LeftSidebar';
 import PostCard from '../components/PostCard';
 import CreatePost from '../components/CreatePost';
 import GroupAdminModal from '../components/GroupAdminModal';
-import { LogOut, UserPlus, Camera, Settings, Loader2, XCircle, Menu, X } from 'lucide-react';
+import { LogOut, UserPlus, Camera, Settings, Loader2, Menu, X } from 'lucide-react';
 
-// --- TYPE DEFINITIONS ---
+// --- TYPE DEFINITIONS (FIXED to be comprehensive) ---
+interface PostAuthor {
+  _id: string;
+  fullName: string;
+  username: string;
+  email: string;
+  role: string;
+  avatar?: string;
+  bio?: string;
+  skills?: string[];
+  followers: string[];
+  following: string[];
+  resumeUrl?: string;
+  profilePictureUrl?: string;
+  location?: string;
+  coverPhotoUrl?: string;
+}
+
 interface Post {
   _id: string;
-  user: { _id: string; fullName: string; role: string; avatar?: string };
+  user: PostAuthor;
   title: string;
   description?: string;
   mediaUrl?: string;
   mediaType?: 'Photo' | 'Video';
   likes: string[];
-  comments: any[];
+  comments: { _id: string; user: PostAuthor; text: string; createdAt: string; }[];
   reactions: any[];
+  group?: { _id: string; admin: string };
 }
 
 interface GroupMember {
@@ -44,16 +62,26 @@ interface GroupDetails {
 // --- SKELETON LOADER ---
 const GroupDetailSkeleton = () => (
   <div className="animate-pulse">
-    <div className="h-64 md:h-80 bg-gray-700"></div>
+    <div className="h-64 md:h-80 bg-gray-700 mt-16"></div>
     <div className="container mx-auto px-4 py-6">
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex-grow space-y-6">
-          <div className="h-24 bg-gray-700 rounded-lg"></div>
-          <div className="h-64 bg-gray-700 rounded-lg"></div>
-        </div>
-        <div className="w-full md:w-80 lg:w-96 flex-shrink-0 space-y-6">
-          <div className="h-20 bg-gray-700 rounded-lg"></div>
-          <div className="h-48 bg-gray-700 rounded-lg"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
+        <aside className="hidden lg:block lg:col-span-3">
+            <div className="space-y-4">
+                <div className="h-48 bg-gray-700 rounded-lg"></div>
+                <div className="h-64 bg-gray-700 rounded-lg"></div>
+            </div>
+        </aside>
+        <div className="col-span-12 lg:col-span-9">
+            <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex-grow space-y-6">
+                    <div className="h-32 bg-gray-700 rounded-lg"></div>
+                    <div className="h-80 bg-gray-700 rounded-lg"></div>
+                </div>
+                <div className="w-full md:w-80 lg:w-96 flex-shrink-0 space-y-6">
+                    <div className="h-20 bg-gray-700 rounded-lg"></div>
+                    <div className="h-64 bg-gray-700 rounded-lg"></div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -77,7 +105,6 @@ const GroupDetailPage = () => {
 
   const fetchGroupData = useCallback(async () => {
     if (!groupId || !token) return;
-    setIsLoading(true);
     try {
       const [groupRes, postsRes] = await Promise.all([
         api.get(`/api/groups/${groupId}`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -94,7 +121,7 @@ const GroupDetailPage = () => {
       }
     } catch (error) {
       console.error("Failed to fetch group data:", error);
-      navigate('/groups'); // Navigate away if group doesn't exist or error occurs
+      navigate('/groups');
     } finally {
       setIsLoading(false);
     }
@@ -159,9 +186,7 @@ const GroupDetailPage = () => {
     );
   }
 
-  if (!group) {
-    return <div className="bg-gray-900 min-h-screen text-white flex items-center justify-center">Group not found.</div>;
-  }
+  if (!group) return <div className="bg-gray-900 min-h-screen text-white flex items-center justify-center">Group not found.</div>;
 
   return (
     <>
