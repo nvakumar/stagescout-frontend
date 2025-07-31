@@ -1,0 +1,4 @@
+/* 3. src/index.css (this is the source file) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
