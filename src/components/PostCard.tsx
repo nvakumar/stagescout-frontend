@@ -6,13 +6,22 @@ import api from '../services/api';
 import CommentSection from './CommentSection';
 import EditPostModal from './EditPostModal';
 
-// Define the shape of the Post data coming from the API
+// FIX: Expanded this interface to match the full UserProfile type from other components
 interface PostAuthor {
   _id: string;
   fullName: string;
+  username: string;
+  email: string;
   role: string;
   avatar?: string;
+  bio?: string;
+  skills?: string[];
+  followers: string[];
+  following: string[];
+  resumeUrl?: string;
   profilePictureUrl?: string;
+  location?: string;
+  coverPhotoUrl?: string;
 }
 
 interface Post {
@@ -158,18 +167,21 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated, groupAdminId }: PostCard
   return (
     <>
       {toastMessage && <Toast message={toastMessage} onDone={() => setToastMessage(null)} />}
-      <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700/50 overflow-hidden mb-6">
+      <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700/50 overflow-hidden mb-6 transition-shadow hover:shadow-indigo-500/10">
         {/* Card Header */}
         <div className="p-3 sm:p-4 flex items-center justify-between">
           <Link to={`/profile/${post.user._id}`} className="flex items-center space-x-3 group">
-            <img
-              src={authorAvatar}
-              alt={post.user.fullName}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover bg-gray-900"
-            />
+            <div className="relative">
+              <img
+                src={authorAvatar}
+                alt={post.user.fullName}
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover bg-gray-900 border-2 border-transparent group-hover:border-indigo-500 transition-all"
+              />
+              <div className="absolute inset-0 rounded-full border-2 border-indigo-600 group-hover:scale-110 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
+            </div>
             <div>
-              <p className="font-bold text-white group-hover:underline text-sm sm:text-base">{post.user.fullName}</p>
-              <p className="text-xs text-gray-400">{post.user.role}</p>
+              <p className="font-bold text-white group-hover:text-indigo-400 transition-colors text-base sm:text-lg">{post.user.fullName}</p>
+              <p className="text-sm text-gray-400">{post.user.role}</p>
             </div>
           </Link>
           {canModifyPost && (
